@@ -134,23 +134,22 @@ class MLPHandler(ProgramHandler):
             outfile.write("MILO\n")
             outfile.write("-------\n")
             outfile.write("MLP\n")
-            outfile.write("Input:\n")
+            outfile.write("Input (angstrom):\n")
             
             for atom in atoms:
                 symbol = atom.symbol
                 pos = atom.position
-                outfile.write(f"{symbol:<2}{'':>20}{pos[0]:>10.5f}{pos[1]:>10.5f}{pos[2]:>10.5f}\n")
+                outfile.write(f"{symbol:<2}    {pos[0]:13.9f}   {pos[1]:13.9f}   {pos[2]:13.9f}\n")
 
 
             outfile.write("\n -------------------------------------------------------------------\n")
-            outfile.write(" Center     Atomic                   Forces (Hartrees/Bohr)\n")
-            outfile.write(" Number     Number              X              Y              Z\n")
-            outfile.write(" -------------------------------------------------------------------\n")
+            outfile.write("Forces (Hartrees/Bohr)\n")
+
             
             for i, force in enumerate(forces_hartree_bohr):
                 symbol = atoms[i].symbol
                 atomic_number = ase_atomic_numbers[symbol]
-                outfile.write(f"{i+1:6d}       {atomic_number:2d}    {force[0]:13.9f}   {force[1]:13.9f}   {force[2]:13.9f}\n")
+                outfile.write(f"{symbol:<2}    {force[0]:13.9f}   {force[1]:13.9f}   {force[2]:13.9f}\n")
 
             outfile.write(f"Energy = {energy_hartree:.9f} Hartrees\n")
 
