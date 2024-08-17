@@ -76,7 +76,6 @@ class ProgramHandler:
                 pass
 
 
-
 class MLPHandler(ProgramHandler):
     """for running MLP jobs"""
     def __init__(self, *args, **kwargs):
@@ -99,11 +98,10 @@ class MLPHandler(ProgramHandler):
     
     def call_mlp(self, job_name, ps: ProgramState, state=None):
         """Call MLP and return a string with the name of the mlp output file."""
-
+    
         # Define file names
         job_xyz_file = f"{job_name}.xyz"
         job_mlp_file = f"{job_name}.mlp"
-
 
         # Prepare the XYZ file
         self.prepare_xyz_file(job_xyz_file, ps, state=state)
@@ -125,7 +123,7 @@ class MLPHandler(ProgramHandler):
         # Set the calculator for the atoms
         atoms.set_calculator(self.mlp.ase_calculator)
 
-        # Calculate properties like energy and forces
+        # Calculate energy and forces
         energy_ev = atoms.get_potential_energy()
         forces_ev_angstrom = atoms.get_forces()
         energy_hartree = energy_ev * ELECTRON_VOLT_TO_HARTREE
@@ -133,26 +131,16 @@ class MLPHandler(ProgramHandler):
         
         with open(job_mlp_file, "w") as outfile:
             outfile.write("-------\n")
-            outfile.write("MLP\n")
+            outfile.write("MILO\n")
             outfile.write("-------\n")
-            
+            outfile.write("MLP\n")
+            outfile.write("Input:\n")
             
             for atom in atoms:
                 symbol = atom.symbol
                 pos = atom.position
                 outfile.write(f"{symbol:<2}{'':>20}{pos[0]:>10.5f}{pos[1]:>10.5f}{pos[2]:>10.5f}\n")
 
-            outfile.write("                          Input orientation:                          \n")
-            outfile.write(" ---------------------------------------------------------------------\n")
-            outfile.write(" Center     Atomic      Atomic             Coordinates (Angstroms)\n")
-            outfile.write(" Number     Number       Type             X           Y           Z\n")
-            outfile.write(" ---------------------------------------------------------------------\n")
-            
-            for i, atom in enumerate(atoms, start=1):
-                symbol = atom.symbol
-                atomic_number = ase_atomic_numbers[symbol]
-                pos = atom.position
-                outfile.write(f"{i:5d}       {atomic_number:5d}       {symbol:>2}    {pos[0]:12.6f}    {pos[1]:12.6f}    {pos[2]:12.6f}\n")
 
             outfile.write("\n -------------------------------------------------------------------\n")
             outfile.write(" Center     Atomic                   Forces (Hartrees/Bohr)\n")
@@ -207,6 +195,11 @@ class MLPHandler(ProgramHandler):
         if state is not None:
             ps.state_energies[-1][state] = containers.Energy(fr["energy"], en.EnergyUnit.HARTREE)
             ps.state_forces[-1][state] = forces
+        else:
+            ps.potential_energies.append(
+                containers.Energy(fr["energy"], en.EnergyUnit.HARTREE)
+            )
+            ps.forces.append(forces)
 
         for key in ps.print_info:
             try:
