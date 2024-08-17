@@ -104,10 +104,7 @@ class MLPHandler(ProgramHandler):
         # Define file names
         job_xyz_file = f"{job_name}.xyz"
         job_mlp_file = f"{job_name}.mlp"
-        os.environ['OMP_NUM_THREADS'] = '1'
-        os.environ['AUTODE_LOG_LEVEL'] = 'CRITICAL'
-        os.environ['MLT_LOG_LEVEL'] = 'CRITICAL'
-        logging.disable(logging.CRITICAL)
+
 
         # Prepare the XYZ file
         self.prepare_xyz_file(job_xyz_file, ps, state=state)
