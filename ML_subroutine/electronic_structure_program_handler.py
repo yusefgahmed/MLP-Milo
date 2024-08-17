@@ -99,7 +99,6 @@ class MLPHandler(ProgramHandler):
     
     def call_mlp(self, job_name, ps: ProgramState, state=None):
         """Call MLP and return a string with the name of the mlp output file."""
-        mlt.Config.n_cores = 1
 
         # Define file names
         job_xyz_file = f"{job_name}.xyz"
